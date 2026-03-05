@@ -13,6 +13,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .eq('id', user.id)
     .single()
 
+  // Si es admin, mandarlo al panel admin
+  if (profile?.role === 'admin') redirect('/admin')
+
   return (
     <div className="flex min-h-screen">
       <Sidebar profile={profile} />
