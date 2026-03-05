@@ -1,16 +1,19 @@
-import { createServerSupabase, createAdminSupabase } from '@/lib/supabase-server'
-import AdminPanel from '@/components/AdminPanel'
+import { redirect } from 'next/navigation'
+import { createServerSupabase } from '@/lib/supabase-server'
 
-export default async function AdminPage() {
-  const admin = createAdminSupabase()
+export default async function Home() {
+  const supabase = createServerSupabase()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-  const { data: clients } = await admin
+  const { data: profile } = await supabase
     .from('profiles')
-    .select('*, portfolios(*, assets(*))')
-    .eq('role', 'client')
-    .order('created_at', { ascending: false })
+    .select('role')
+    .eq('id', user.id)
+    .single()
 
-  const { data: marketData } = await admin.from('market_data').select('*')
+  console.log('profile role:', profile?.role)
 
-  return <AdminPanel clients={clients || []} marketData={marketData || []} />
+  if (profile?.role === 'admin') redirect('/admin')
+  redirect('/dashboard')
 }
