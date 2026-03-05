@@ -80,7 +80,7 @@ export default function AdminPanel({ clients, marketData }: any) {
         .flatMap((c: any) => c.portfolios?.[0]?.assets || [])
         .map((a: any) => a.ticker)
         .filter(Boolean)
-      const unique = [...new Set(allTickers)]
+      const unique = Array.from(new Set(allTickers))
       await fetch('/api/prices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
